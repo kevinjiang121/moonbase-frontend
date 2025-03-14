@@ -1,69 +1,70 @@
-.home-page {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
+/* src/app/home-page/home-page.component.scss */
+
+/* Container that positions the chat box near the bottom center of the page */
+.chat-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  pointer-events: none; /* Allows clicks to pass through if desired; remove if not wanted */
 }
 
-.center-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.core-buttons {
+/* The chat box itself */
+.chat-box {
+  background-color: #2b2b2b; /* Use your preferred dark-gray color here */
+  width: 80%;
+  max-width: 600px;
+  height: 300px;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 10px;
+  color: #fff;
+  padding: 1rem;
+  pointer-events: auto; /* Ensure the chat box can be clicked */
 }
 
-.create-buttons {
+.chat-box h3 {
+  margin: 0 0 0.5rem;
+}
+
+/* Scrollable messages area */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 0.5rem;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+/* Input row at the bottom */
+.input-area {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+  gap: 0.5rem;
 
-.btn {
-  padding: 10px 20px;
-  font-size: 16px;
-  text-align: center;
-  width: 120px;
-  border: none;
-  background-color: #007bff;
-  color: #fff;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
+  input[type="text"] {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 4px;
+    outline: none;
+  }
 
-.btn:hover:not(:disabled) {
-  background-color: #0056b3;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.tooltip-wrapper {
-  position: relative;
-  display: inline-block;
-}
-
-.tooltip-wrapper:hover::after {
-  content: attr(title);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  margin-bottom: 5px;
-  pointer-events: none;
-  z-index: 1000;
+  button {
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
 }
