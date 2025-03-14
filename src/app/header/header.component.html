@@ -1,0 +1,14 @@
+<header class="header">
+  <div class="left">
+    <a class="brand" [routerLink]="['/']">Game Tavern Online</a>
+  </div>
+  <div class="right">
+    <ng-container *ngIf="!(loggedIn$ | async); else loggedInBlock">
+      <button class="btn" [routerLink]="['/login']">Login</button>
+      <button class="btn" [routerLink]="['/signup']">Signup</button>
+    </ng-container>
+    <ng-template #loggedInBlock>
+      <button class="btn" (click)="logout()">Logoff</button>
+    </ng-template>
+  </div>
+</header>

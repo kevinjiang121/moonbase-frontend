@@ -1,0 +1,36 @@
+<div class="home-page">
+  <div class="center-content">
+    <ng-container *ngIf="phase === 'core'">
+      <div class="core-buttons">
+        <button class="btn join-btn">Play</button>
+
+        <span class="tooltip-wrapper" [attr.title]="(loggedIn$ | async) ? '' : 'Login to Host'">
+          <button class="btn host-btn" [disabled]="!(loggedIn$ | async)">Host</button>
+        </span>
+        
+        <span class="tooltip-wrapper" [attr.title]="(loggedIn$ | async) ? '' : 'Login to Create'">
+          <button class="btn create-btn" [disabled]="!(loggedIn$ | async)" (click)="showCreateOptions()">
+            Create
+          </button>
+        </span>
+        
+        <span class="tooltip-wrapper" [attr.title]="(loggedIn$ | async) ? '' : 'Login to View'">
+          <button class="btn view-btn" [disabled]="!(loggedIn$ | async)">View</button>
+        </span>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="phase === 'create-options'">
+      <div class="create-buttons">
+        <button class="btn" (click)="createGame()">Game</button>
+        <button class="btn">Campaign</button>
+        <button class="btn" (click)="showCreateCharacter()">Character</button>
+        <button class="btn" (click)="cancelCreate()">Back</button>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="phase === 'create-character'">
+      <app-create-character></app-create-character>
+    </ng-container>
+  </div>
+</div>

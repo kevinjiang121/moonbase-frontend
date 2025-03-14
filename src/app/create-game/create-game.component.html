@@ -1,0 +1,57 @@
+<div class="create-game">
+    <h2>Create Game</h2>
+    <label>Title</label>
+    <input type="text" [(ngModel)]="title" />
+
+    <label>Version</label>
+    <input type="text" [(ngModel)]="version" />
+  
+    <label>Description</label>
+    <textarea [(ngModel)]="description"></textarea>
+  
+    <label>Scaling</label>
+    <input type="text" [(ngModel)]="scaling" />
+
+    <label>Win Condition</label>
+    <input type="text" [(ngModel)]="winCondition" />
+
+    <label>Loss Condition</label>
+    <input type="text" [(ngModel)]="lossCondition" />
+  
+    <h3>Mechanics</h3>
+    <button (click)="addMechanic()">Add Mechanic</button>
+    <div *ngFor="let mech of mechanics; let i = index" class="mechanic-row">
+      <input type="text" placeholder="Mechanic name" [(ngModel)]="mech.name" />
+      <label>
+        <input type="checkbox" [(ngModel)]="mech.automated" />
+        Automated
+      </label>
+      <button (click)="removeMechanic(i)">Remove</button>
+    </div>
+
+    <h3>Enemies</h3>
+    <button (click)="addEnemy()">Add Enemy</button>
+    <div *ngFor="let enemy of enemies; let i = index" class="enemy-row">
+      <input type="text" placeholder="Enemy name" [(ngModel)]="enemies[i]" />
+      <button (click)="removeEnemy(i)">Remove</button>
+    </div>
+
+    <h3>Optional Rules</h3>
+    <button (click)="addOptionalRule()">Add Optional Rule</button>
+    <div *ngFor="let rule of optionalRules; let i = index" class="optional-row">
+      <input type="text" [(ngModel)]="optionalRules[i]" />
+      <button (click)="removeOptionalRule(i)">Remove</button>
+    </div>
+  
+    <h3>House Rules</h3>
+    <button (click)="addHouseRule()">Add House Rule</button>
+    <div *ngFor="let rule of houseRules; let i = index" class="house-row">
+      <input type="text" [(ngModel)]="houseRules[i]" />
+      <button (click)="removeHouseRule(i)">Remove</button>
+    </div>
+  
+    <div class="create-game">
+        <button class="btn-submit" (click)="onSubmit()">Create Game</button>
+    </div>      
+  </div>
+  

@@ -1,1 +1,35 @@
-/* You can add global styles to this file, and also import other style files */
+@font-face {
+    font-family: 'Immortal';
+    src: url('assets/fonts/IMMORTAL.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+  
+  @font-face {
+    font-family: 'ImmortalAlt';
+    src: url('assets/fonts/IMMRTLT_.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input:not([type]),
+textarea {
+  border: none;
+  border-bottom: 1px solid #ccc;
+  outline: none;
+  background: transparent;
+  padding: 8px 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input:not([type]):focus,
+textarea:focus {
+  border-bottom-color: #007bff; /* or your preferred color */
+}
