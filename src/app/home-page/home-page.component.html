@@ -1,4 +1,5 @@
 <div class="home-page">
-  <app-chat-window [messages]="messages"></app-chat-window>
-  <app-chat (messageSend)="onMessageSend($event)"></app-chat>
+  <div class="chat-window-container">
+    <app-chat-window [messages]="messages"></app-chat-window>
+  </div>
 </div>

@@ -7,7 +7,7 @@ import { ChatComponent } from '../chat/chat.component';
   selector: 'app-home-page',
   standalone: true,
   imports: [CommonModule, ChatWindowComponent, ChatComponent],
-  template: './home-page.component.html',
+  templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.scss']
 })
 export class HomePageComponent {
@@ -17,4 +17,3 @@ export class HomePageComponent {
     this.messages.push(newMessage);
   }
 }
-
