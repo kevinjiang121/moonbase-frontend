@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
 })
-export class Chat {
+export class ChatComponent {
   @Output() messageSend = new EventEmitter<string>();
   messageText: string = '';
 
