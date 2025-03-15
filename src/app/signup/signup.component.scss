@@ -1,31 +1,45 @@
 .signup-box {
-    border: 1px solid #ccc;
-    padding: 20px;
-    width: 300px;
-    margin: 40px auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border-radius: 4px;
-  }
-  
-  .signup-box input {
-    padding: 8px;
-    font-size: 14px;
-  }
-  
-  .signup-box .btn {
-    padding: 10px;
-    font-size: 16px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .signup-box .btn:hover {
-    background-color: #0056b3;
-  }
-  
+  border: 1px solid #ccc;
+  padding: 20px;
+  width: 300px;
+  margin: 250px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: 4px;
+  background-color: #525252;
+}
+
+.signup-box input {
+  padding: 8px;
+  font-size: 14px;
+}
+
+.signup-box .btn {
+  padding: 10px;
+  font-size: 16px;
+  background-color: #b8860b;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.signup-box .btn:hover {
+  background-color: #a57c00;
+}
+
+.login-link {
+  text-align: center;
+  font-size: 14px;
+}
+
+.login-link a {
+  color: #6495ed;
+  text-decoration: none;
+}
+
+.login-link a:active {
+  color: #4169e1;
+}

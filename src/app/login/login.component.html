@@ -2,6 +2,11 @@
   <h2>Login</h2>
   <input type="text" placeholder="Username" [(ngModel)]="username" />
   <input type="password" placeholder="Password" [(ngModel)]="password" />
+  <p class="forgot-password">
+    <a [routerLink]="['/forgot-password']">Forgot Password</a>
+  </p>
   <button class="btn" (click)="onLogin()">Login</button>
-  <p><a [routerLink]="['/forgot-password']">Forgot Password</a></p>
+  <p class="signup-link">
+    Don't have an account? <a [routerLink]="['/signup']">Sign up</a>
+  </p>
 </div>

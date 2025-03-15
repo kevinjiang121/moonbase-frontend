@@ -2,17 +2,31 @@
   border: 1px solid #ccc;
   padding: 20px;
   width: 300px;
-  margin: 40px auto;
+  margin: 250px auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
   border-radius: 4px;
-  background-color: hsl(0, 0%, 23%);
+  background-color: #525252;
 }
 
 .login-box input {
   padding: 8px;
   font-size: 14px;
+}
+
+.forgot-password {
+  margin: 0;
+  font-size: 14px;
+}
+
+.forgot-password a {
+  color: #6495ed;
+  text-decoration: none;
+}
+
+.forgot-password a:active {
+  color: #4169e1;
 }
 
 .login-box .btn {
@@ -28,4 +42,18 @@
 
 .login-box .btn:hover {
   background-color: #a57c00;
+}
+
+.signup-link {
+  text-align: center;
+  font-size: 14px;
+}
+
+.signup-link a {
+  color: #6495ed;
+  text-decoration: none;
+}
+
+.signup-link a:active {
+  color: #4169e1;
 }
