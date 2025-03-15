@@ -1,16 +1,9 @@
-<div class="chat-container">
-    <div class="chat-messages">
-      <div class="message" *ngFor="let msg of messages">
-        {{ msg }}
-      </div>
-    </div>
-    <div class="chat-input">
-      <input
-        type="text"
-        placeholder="Message #moonbase"
-        [(ngModel)]="messageText"
-        (keyup.enter)="sendMessage()"
-      />
-    </div>
+<div class="chat-input">
+    <input
+      type="text"
+      placeholder="Message #moonbase"
+      [(ngModel)]="messageText"
+      (keyup.enter)="sendMessage()"
+    />
   </div>
   

@@ -1,4 +1,4 @@
-<!-- src/app/home-page/home-page.component.html -->
-<div class="chat-input">
-  <input type="text" placeholder="Message #moonbase" />
+<div class="home-page">
+  <app-chat-window [messages]="messages"></app-chat-window>
+  <app-chat (messageSend)="onMessageSend($event)"></app-chat>
 </div>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -9,13 +9,13 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
 })
-export class ChatComponent {
+export class Chat {
+  @Output() messageSend = new EventEmitter<string>();
   messageText: string = '';
-  messages: string[] = [];
 
   sendMessage(): void {
     if (this.messageText.trim()) {
-      this.messages.push(this.messageText);
+      this.messageSend.emit(this.messageText);
       this.messageText = '';
     }
   }
