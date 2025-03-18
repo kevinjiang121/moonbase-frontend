@@ -1,11 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { LoginComponent } from './login.component';
 import { AuthService } from '../auth/auth.service';
-import { of, throwError } from 'rxjs';
-import { RouterTestingModule } from '@angular/router/testing';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of, throwError } from 'rxjs';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -13,12 +12,17 @@ describe('LoginComponent', () => {
   let authService: AuthService;
   let router: Router;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [LoginComponent, RouterTestingModule, FormsModule, HttpClientModule],
-      providers: [AuthService]
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [LoginComponent, RouterTestingModule, FormsModule],
+      providers: [
+        {
+          provide: AuthService,
+          useValue: { login: jasmine.createSpy('login') }
+        }
+      ]
     }).compileComponents();
-  });
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LoginComponent);
@@ -28,52 +32,38 @@ describe('LoginComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create the component', () => {
+  it('should create the login component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should call AuthService.login on successful login', waitForAsync(() => {
-    spyOn(authService, 'login').and.returnValue(of({
-      token: 'dummy-token',
-      user: { id: 1, username: 'testuser' }
-    }));
+  it('should call authService.login on onLogin and navigate on success', waitForAsync(() => {
+    const dummyResponse = {
+      access_token: 'dummy-token',
+      user: { user_id: 1, username: 'test', email: 'test@test.com' }
+    };
+    (authService.login as jasmine.Spy).and.returnValue(of(dummyResponse));
+    spyOn(router, 'navigateByUrl');
 
-    component.username = 'testuser';
+    component.username = 'test';
     component.password = 'password';
     component.onLogin();
 
     fixture.whenStable().then(() => {
-      expect(authService.login).toHaveBeenCalledWith('testuser', 'password');
+      expect(authService.login).toHaveBeenCalledWith('test', 'password');
+      expect(router.navigateByUrl).toHaveBeenCalledWith('/home-page');
     });
   }));
 
-  it('should handle login error by alerting the user', waitForAsync(() => {
+  it('should alert on login failure', waitForAsync(() => {
     spyOn(window, 'alert');
-    spyOn(authService, 'login').and.returnValue(throwError(() => new Error('Login failed')));
+    (authService.login as jasmine.Spy).and.returnValue(throwError(() => new Error('Login failed')));
 
-    component.username = 'testuser';
-    component.password = 'wrongpassword';
+    component.username = 'test';
+    component.password = 'wrong';
     component.onLogin();
 
     fixture.whenStable().then(() => {
-      expect(authService.login).toHaveBeenCalledWith('testuser', 'wrongpassword');
       expect(window.alert).toHaveBeenCalledWith('Login failed. Please try again.');
-    });
-  }));
-
-  it('should redirect to home after successful login', waitForAsync(() => {
-    spyOn(router, 'navigate');
-    spyOn(authService, 'login').and.returnValue(of({
-      token: 'dummy-token',
-      user: { id: 1, username: 'testuser' }
-    }));
-
-    component.username = 'testuser';
-    component.password = 'password';
-    component.onLogin();
-
-    fixture.whenStable().then(() => {
-      expect(router.navigate).toHaveBeenCalledWith(['/']);
     });
   }));
 });

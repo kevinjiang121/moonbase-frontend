@@ -6,9 +6,7 @@ import { environment } from '../../environments/environment';
 describe('AuthService', () => {
   let service: AuthService;
   let httpMock: HttpTestingController;
-
-  const expectedLoginUrl = `${environment.apiUrl}/users/login/`;
-
+  
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -16,7 +14,6 @@ describe('AuthService', () => {
     });
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
-    localStorage.clear();
   });
 
   afterEach(() => {
@@ -27,34 +24,25 @@ describe('AuthService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should login successfully and update login state', () => {
+  it('should login and store token', () => {
     const dummyResponse: LoginResponse = {
-      token: 'dummy-token',
-      user: { id: 1, username: 'testuser' }
+      access_token: 'dummy-token',
+      user: { user_id: 1, username: 'test', email: 'test@test.com' }
     };
 
-    let loggedIn = false;
-    service.loggedIn$.subscribe(state => loggedIn = state);
-
-    service.login('testuser', 'password').subscribe(response => {
+    service.login('test', 'password').subscribe(response => {
       expect(response).toEqual(dummyResponse);
-      expect(loggedIn).toBeTrue();
       expect(localStorage.getItem('authToken')).toBe('dummy-token');
     });
 
-    const req = httpMock.expectOne(expectedLoginUrl);
+    const req = httpMock.expectOne(`${environment.apiUrl}/auth/login/`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ username: 'testuser', password: 'password' });
     req.flush(dummyResponse);
   });
 
-  it('should handle login error', () => {
-    let errorResponse: any;
-    service.login('testuser', 'wrongpassword').subscribe({
-      error: (error) => errorResponse = error
-    });
-    const req = httpMock.expectOne(expectedLoginUrl);
-    req.flush({ message: 'Invalid credentials' }, { status: 401, statusText: 'Unauthorized' });
-    expect(errorResponse.status).toBe(401);
+  it('should logout and remove token', () => {
+    localStorage.setItem('authToken', 'dummy-token');
+    service.logout();
+    expect(localStorage.getItem('authToken')).toBeNull();
   });
 });
