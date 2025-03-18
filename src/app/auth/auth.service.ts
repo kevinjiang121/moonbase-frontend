@@ -4,8 +4,12 @@ import { BehaviorSubject, tap, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface LoginResponse {
-  token: string;
-  user: any;
+  access_token: string;
+  user: {
+    user_id: number;
+    username: string;
+    email: string;
+  };
 }
 
 @Injectable({
@@ -17,13 +21,13 @@ export class AuthService {
   public loggedIn$ = this.loggedInSubject.asObservable();
 
   login(username: string, password: string): Observable<LoginResponse> {
-    const loginUrl = `${environment.apiUrl}/users/login/`;
+    const loginUrl = `${environment.apiUrl}/auth/login/`;
     const payload = { username, password };
 
     return this.http.post<LoginResponse>(loginUrl, payload).pipe(
       tap(response => {
         this.loggedInSubject.next(true);
-        localStorage.setItem('authToken', response.token);
+        localStorage.setItem('authToken', response.access_token);
       })
     );
   }
