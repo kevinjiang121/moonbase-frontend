@@ -1,6 +1,44 @@
 .landing-page {
-    display: flex;
-    justify-content: center;
-    height: 100vh;
-    background-color: #1e1e1e;
-  }
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.landing-container {
+  width: 40vw;
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background-color: #DDA0DD;
+  border-radius: 20px;
+}
+
+.top-container {
+  flex: 1;
+  display: flex;
+  border: 1px solid #444;
+}
+
+.column {
+  flex: 1;
+  border: 1px solid #555;
+}
+
+.bottom-container {
+  display: flex;
+  height: 30%;
+  border: 1px solid #444;
+}
+
+.bottom-box {
+  flex: 1;
+  border: 1px solid #555;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}

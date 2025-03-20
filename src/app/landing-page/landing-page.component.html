@@ -1,6 +1,24 @@
 <div class="landing-page">
-    <div class="login-wrapper">
-      <app-login></app-login>
+  <div class="landing-container">
+    <div class="top-container">
+      <div class="column top1"></div>
+      <div class="column top2"></div>
+      <div class="column top3"></div>
+    </div>
+
+    <div class="bottom-container">
+      <div class="bottom-box bottom1">
+        <p>
+          Already a Regular?
+          <a [routerLink]="['/login']">Login</a>
+        </p>
+      </div>
+      <div class="bottom-box bottom2">
+        <p>
+          New Arrival?
+          <a [routerLink]="['/signup']">Sign Up</a>
+        </p>
+      </div>
     </div>
   </div>
-  
+</div>

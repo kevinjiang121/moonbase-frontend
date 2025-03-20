@@ -1,8 +1,85 @@
-html, body {
+body {
   margin: 0;
   padding: 0;
-  background-color: #1e1e1e; /* Or another dark-gray hex you prefer */
-  color: #fff; /* Ensures text is readable on a dark background */
-  height: 100%;
-  width: 100%;
+  background-color: #1e1e1e;
+  position: relative;
+  overflow: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 2px;
+  background-color: white;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  box-shadow: 
+    5vw 10vh white,
+    12vw 22vh white,
+    20vw 15vh white,
+    28vw 32vh white,
+    35vw 8vh white,
+    42vw 27vh white,
+    50vw 35vh white,
+    58vw 45vh white,
+    65vw 20vh white,
+    70vw 40vh white,
+    78vw 30vh white,
+    85vw 50vh white,
+    90vw 10vh white,
+    95vw 37vh white;
+  animation: twinkleA 3.5s infinite ease-in-out;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 2px;
+  background-color: white;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  box-shadow:
+    8vw 12vh white,
+    16vw 28vh white,
+    24vw 18vh white,
+    32vw 42vh white,
+    40vw 14vh white,
+    48vw 34vh white,
+    56vw 26vh white,
+    64vw 46vh white,
+    72vw 16vh white,
+    80vw 36vh white,
+    88vw 24vh white,
+    96vw 44vh white,
+    10vw 65vh white,
+    20vw 70vh white,
+    30vw 75vh white,
+    40vw 80vh white,
+    50vw 85vh white,
+    60vw 78vh white,
+    70vw 72vh white,
+    80vw 68vh white,
+    90vw 74vh white,
+    15vw 92vh white,
+    50vw 95vh white,
+    85vw 90vh white;
+  animation: twinkleB 4.5s infinite ease-in-out;
+}
+
+@keyframes twinkleA {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+@keyframes twinkleB {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
 }
