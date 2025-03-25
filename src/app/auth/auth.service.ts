@@ -23,7 +23,7 @@ export class AuthService {
   login(username: string, password: string): Observable<LoginResponse> {
     const loginUrl = `${environment.apiUrl}/auth/login/`;
     const payload = { username, password };
-
+ 
     return this.http.post<LoginResponse>(loginUrl, payload).pipe(
       tap(response => {
         this.loggedInSubject.next(true);
