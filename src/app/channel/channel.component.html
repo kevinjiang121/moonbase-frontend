@@ -1,4 +1,18 @@
-<div class="channel">
-    <h2>Channel</h2>
+<div class="channel-display">
+  <div class="ungrouped-section">
+    <h3>Channels</h3>
+    <ul>
+      <li *ngFor="let channel of ungroupedChannels" class="channel-item">
+        {{ channel.name }}
+      </li>
+    </ul>
   </div>
-  
+  <div class="group-section" *ngFor="let group of channelGroups">
+    <h3 class="group-name">{{ group.name }}</h3>
+    <ul>
+      <li *ngFor="let channel of groupedChannels[group.id]" class="channel-item indented">
+        {{ channel.name }}
+      </li>
+    </ul>
+  </div>
+</div>
