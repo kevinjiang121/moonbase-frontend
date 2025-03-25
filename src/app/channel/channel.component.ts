@@ -30,7 +30,7 @@ export class ChannelComponent implements OnInit {
   public channels: Channel[] = [];
   public ungroupedChannels: Channel[] = [];
   public groupedChannels: { [groupId: number]: Channel[] } = {};
-
+  public expandedGroups: { [groupId: number]: boolean } = {};
   constructor(private channelService: ChannelService) {}
 
   ngOnInit(): void {
@@ -58,5 +58,8 @@ export class ChannelComponent implements OnInit {
         }
       });
     });
+  }
+  toggleGroup(groupId: number): void {
+    this.expandedGroups[groupId] = !this.expandedGroups[groupId];
   }
 }
