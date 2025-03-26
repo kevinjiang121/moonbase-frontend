@@ -1,20 +1,76 @@
 .channel-display {
-  padding: 10px;
+  width: 100%;
+  height: 100%;
   background-color: #2c2c2c;
   color: #fff;
-
+  position: relative;
+  box-sizing: border-box;
+  padding: 8px;
+  
   ul {
     margin: 0;
     padding: 0;
   }
-
+  
   li {
     list-style: none;
     margin: 0;
     padding: 0;
   }
+  
+  .ungrouped-section {
+    margin-bottom: 20px;
+  }
+  
+  .group-section {
+    margin-bottom: 15px;
+  }
+  
+  .group-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
 
-  .group-btn,
+    .group-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: inherit;
+      text-align: left;
+      padding: 6px 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+      &:hover,
+      &:focus {
+        outline: none;
+        background-color: #3a3a3a;
+      }
+    }
+
+    .add-button {
+      background-color: #3a3a3a;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      margin-left: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      text-align: center;
+      padding: 0;
+      &:hover {
+        background-color: #4a4a4a;
+      }
+    }
+  }
+
+  .indented {
+    margin-left: 8px;
+  }
+
   .channel-btn {
     background: transparent;
     border: none;
@@ -25,18 +81,11 @@
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
-  }
-
-  .group-btn:hover,
-  .channel-btn:hover,
-  .group-btn:focus,
-  .channel-btn:focus {
-    outline: none;
-    background-color: #3a3a3a;
-  }
-
-  .indented {
-    margin-left: 8px;
+    &:hover,
+    &:focus {
+      outline: none;
+      background-color: #3a3a3a;
+    }
   }
 
   .icon {
@@ -47,5 +96,66 @@
 
   .icon.expanded {
     transform: rotate(90deg);
+  }
+
+  .context-menu {
+    position: fixed;
+    background-color: #383838;
+    color: #fff;
+    border: 1px solid #444;
+    z-index: 1000;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+    padding: 8px;
+    min-width: 200px;
+  }
+
+  .menu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    &:hover {
+      background-color: #4a4a4a;
+    }
+  }
+
+  .menu-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+
+      input,
+      select {
+        margin-top: 4px;
+        padding: 4px;
+        border: 1px solid #555;
+        border-radius: 4px;
+        background-color: #2c2c2c;
+        color: #fff;
+      }
+    }
+
+    .form-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+
+      button {
+        padding: 6px 10px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        background-color: #007bff;
+        color: #fff;
+        transition: background-color 0.2s;
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+    }
   }
 }

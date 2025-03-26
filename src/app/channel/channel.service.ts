@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-
 export interface ChannelGroup {
   id: number;
   name: string;
@@ -23,31 +22,29 @@ export interface Channel {
   providedIn: 'root'
 })
 export class ChannelService {
-  private baseUrl = environment.apiUrl;
-
   constructor(private http: HttpClient) {}
 
   getChannelGroups(): Observable<ChannelGroup[]> {
-    return this.http.get<ChannelGroup[]>(`${this.baseUrl}/channels/get-channel-groups-list/`);
+    return this.http.get<ChannelGroup[]>(`${environment.apiUrl}/channels/get-channel-groups-list/`);
   }
 
   getChannels(): Observable<Channel[]> {
-    return this.http.get<Channel[]>(`${this.baseUrl}/channels/get-channels-list/`);
+    return this.http.get<Channel[]>(`${environment.apiUrl}/channels/get-channels-list/`);
   }
 
-  createChannel(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/channels/create-channel/`, data);
+  createChannelGroup(data: { name: string; description: string }): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/channels/create-channel-group/`, data);
   }
 
-  deleteChannel(pk: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/channels/delete-channel/${pk}/`);
+  createChannel(data: { name: string; description?: string; group?: number }): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/channels/create-channel/`, data);
   }
 
-  createChannelGroup(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/channels/create-channel-group/`, data);
+  deleteChannelGroup(groupId: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/channels/delete-channel-group/${groupId}/`);
   }
 
-  deleteChannelGroup(pk: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/channels/delete-channel-group/${pk}/`);
+  deleteChannel(channelId: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/channels/delete-channel/${channelId}/`);
   }
 }

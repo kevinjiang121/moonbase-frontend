@@ -1,36 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChannelService } from './channel.service';
-
-export interface ChannelGroup {
-  id: number;
-  name: string;
-  description: string;
-  created_at: string;
-}
-
-export interface Channel {
-  id: number;
-  name: string;
-  description: string;
-  channel_type: string;
-  created_at: string;
-  group: number | null;
-}
+import { FormsModule } from '@angular/forms';
+import { ChannelService, Channel, ChannelGroup } from './channel.service';
 
 @Component({
   selector: 'app-channel',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './channel.component.html',
   styleUrls: ['./channel.component.scss']
 })
 export class ChannelComponent implements OnInit {
-  public channelGroups: ChannelGroup[] = [];
-  public channels: Channel[] = [];
-  public ungroupedChannels: Channel[] = [];
-  public groupedChannels: { [groupId: number]: Channel[] } = {};
-  public expandedGroups: { [groupId: number]: boolean } = {};
+  @ViewChild('contextMenuRef') contextMenuRef!: ElementRef<HTMLDivElement>;
+
+  channelGroups: ChannelGroup[] = [];
+  channels: Channel[] = [];
+  ungroupedChannels: Channel[] = [];
+  groupedChannels: { [groupId: number]: Channel[] } = {};
+
+  expandedGroups: { [groupId: number]: boolean } = {};
+
+  contextMenuVisible: boolean = false;
+  contextMenuX: number = 0;
+  contextMenuY: number = 0;
+  contextMenuMode: 'main' | 'createCategory' | 'createChannel' = 'main';
+
+  newCategoryName: string = '';
+  newCategoryDescription: string = '';
+
+  newChannelName: string = '';
+  newChannelDescription: string = '';
+  newChannelGroupId: number | null = null;
+
   constructor(private channelService: ChannelService) {}
 
   ngOnInit(): void {
@@ -38,16 +39,16 @@ export class ChannelComponent implements OnInit {
     this.loadChannels();
   }
 
-  private loadChannelGroups(): void {
+  loadChannelGroups(): void {
     this.channelService.getChannelGroups().subscribe((groups: ChannelGroup[]) => {
       this.channelGroups = groups;
     });
   }
 
-  private loadChannels(): void {
+  loadChannels(): void {
     this.channelService.getChannels().subscribe((channels: Channel[]) => {
       this.channels = channels;
-      this.ungroupedChannels = channels.filter(channel => channel.group === null);
+      this.ungroupedChannels = channels.filter(ch => ch.group === null);
       this.groupedChannels = {};
       channels.forEach(channel => {
         if (channel.group !== null) {
@@ -59,7 +60,95 @@ export class ChannelComponent implements OnInit {
       });
     });
   }
+
   toggleGroup(groupId: number): void {
     this.expandedGroups[groupId] = !this.expandedGroups[groupId];
+  }
+
+  onRightClick(event: MouseEvent): void {
+    event.preventDefault();
+    this.contextMenuVisible = true;
+    this.contextMenuX = event.clientX;
+    this.contextMenuY = event.clientY;
+    this.contextMenuMode = 'main';
+  }
+
+  onContextMenuClick(event: MouseEvent): void {
+    event.stopPropagation();
+  }
+
+  @HostListener('document:click', ['$event.target'])
+  onDocumentClick(target: HTMLElement): void {
+    if (this.contextMenuRef && !this.contextMenuRef.nativeElement.contains(target)) {
+      this.contextMenuVisible = false;
+    }
+  }
+
+  showCreateCategory(): void {
+    this.contextMenuMode = 'createCategory';
+    this.newCategoryName = '';
+    this.newCategoryDescription = '';
+  }
+
+  showCreateChannel(): void {
+    this.contextMenuMode = 'createChannel';
+    this.newChannelName = '';
+    this.newChannelDescription = '';
+    this.newChannelGroupId = null;
+  }
+
+  createChannelForGroup(groupId: number): void {
+    this.newChannelGroupId = groupId;
+    this.contextMenuVisible = true;
+    this.contextMenuMode = 'createChannel';
+  }
+
+  submitCreateCategory(): void {
+    if (!this.newCategoryName.trim()) {
+      alert('Please enter a category name.');
+      return;
+    }
+    const data = {
+      name: this.newCategoryName.trim(),
+      description: this.newCategoryDescription.trim()
+    };
+    this.channelService.createChannelGroup(data).subscribe({
+      next: () => {
+        alert('Category created successfully!');
+        this.loadChannelGroups();
+        this.loadChannels();
+        this.contextMenuVisible = false;
+      },
+      error: () => alert('Failed to create category.')
+    });
+  }
+
+  submitCreateChannel(): void {
+    if (!this.newChannelName.trim()) {
+      alert('Please enter a channel name.');
+      return;
+    }
+    const data: any = {
+      name: this.newChannelName.trim()
+    };
+    if (this.newChannelDescription.trim()) {
+      data.description = this.newChannelDescription.trim();
+    }
+    if (this.newChannelGroupId !== null) {
+      data.group = this.newChannelGroupId;
+    }
+    this.channelService.createChannel(data).subscribe({
+      next: () => {
+        alert('Channel created successfully!');
+        this.loadChannelGroups();
+        this.loadChannels();
+        this.contextMenuVisible = false;
+      },
+      error: () => alert('Failed to create channel.')
+    });
+  }
+
+  cancelContextMenu(): void {
+    this.contextMenuMode = 'main';
   }
 }

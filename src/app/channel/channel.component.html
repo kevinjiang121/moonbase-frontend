@@ -1,4 +1,4 @@
-<div class="channel-display">
+<div class="channel-display" (contextmenu)="onRightClick($event)">
   <div class="ungrouped-section">
     <h3>Channels</h3>
     <ul>
@@ -9,15 +9,72 @@
   </div>
 
   <div class="group-section" *ngFor="let group of channelGroups">
-    <button class="group-btn" (click)="toggleGroup(group.id)">
-      <span class="icon" [class.expanded]="expandedGroups[group.id]">&#x25B6;</span>
-      {{ group.name }}
-    </button>
-
+    <div class="group-row">
+      <button class="group-btn" (click)="toggleGroup(group.id)">
+        <span class="icon" [class.expanded]="expandedGroups[group.id]">&#x25B6;</span>
+        {{ group.name }}
+      </button>
+      <button class="add-button" (click)="createChannelForGroup(group.id)">+</button>
+    </div>
     <ul *ngIf="expandedGroups[group.id]">
       <li *ngFor="let channel of (groupedChannels[group.id] || [])">
         <button class="channel-btn indented">{{ channel.name }}</button>
       </li>
     </ul>
+  </div>
+
+  <div
+    #contextMenuRef
+    class="context-menu"
+    (click)="onContextMenuClick($event)"
+    *ngIf="contextMenuVisible"
+    [ngStyle]="{ 'top.px': contextMenuY, 'left.px': contextMenuX }">
+    <ng-container [ngSwitch]="contextMenuMode">
+      <ng-container *ngSwitchCase="'main'">
+        <div class="menu-item" (click)="showCreateChannel()">Create Channel</div>
+        <div class="menu-item" (click)="showCreateCategory()">Create Category</div>
+      </ng-container>
+      <ng-container *ngSwitchCase="'createCategory'">
+        <div class="menu-form">
+          <label>
+            Category Name:
+            <input type="text" [(ngModel)]="newCategoryName" placeholder="Enter category name" />
+          </label>
+          <label>
+            Description:
+            <input type="text" [(ngModel)]="newCategoryDescription" placeholder="Enter description" />
+          </label>
+          <div class="form-buttons">
+            <button (click)="submitCreateCategory()">Create</button>
+            <button (click)="cancelContextMenu()">Cancel</button>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="'createChannel'">
+        <div class="menu-form">
+          <label>
+            Channel Name:
+            <input type="text" [(ngModel)]="newChannelName" placeholder="Enter channel name" />
+          </label>
+          <label>
+            Description (optional):
+            <input type="text" [(ngModel)]="newChannelDescription" placeholder="Enter description" />
+          </label>
+          <label>
+            Group:
+            <select [(ngModel)]="newChannelGroupId">
+              <option [ngValue]="null">No Group</option>
+              <option *ngFor="let grp of channelGroups" [ngValue]="grp.id">
+                {{ grp.name }}
+              </option>
+            </select>
+          </label>
+          <div class="form-buttons">
+            <button (click)="submitCreateChannel()">Create</button>
+            <button (click)="cancelContextMenu()">Cancel</button>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
   </div>
 </div>
