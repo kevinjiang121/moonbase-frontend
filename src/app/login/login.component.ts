@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService, LoginResponse } from '../auth/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
-import { AuthService, LoginResponse } from '../auth/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -12,18 +12,23 @@ import { AuthService, LoginResponse } from '../auth/auth.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  username: string = '';
-  password: string = '';
+  username = '';
+  password = '';
+  message = '';
+  messageClass = '';
 
   constructor(private authService: AuthService, private router: Router) {}
 
   onLogin(): void {
     this.authService.login(this.username, this.password).subscribe({
       next: (response: LoginResponse) => {
-        this.router.navigate(['/home-page']);
+        this.message = 'Login successful, redirecting...';
+        this.messageClass = 'success';
+        setTimeout(() => this.router.navigate(['/home-page']), 1500);
       },
-      error: (error) => {
-        alert('Login failed. Please try again.');
+      error: () => {
+        this.message = 'Login failed. Please try again.';
+        this.messageClass = 'error';
       }
     });
   }

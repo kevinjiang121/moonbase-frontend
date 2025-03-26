@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-signup',
@@ -17,18 +17,21 @@ export class SignupComponent {
   password: string = '';
   confirmPassword: string = '';
   email: string = '';
+  message: string = '';
+  messageClass: string = '';
 
   constructor(private http: HttpClient, private router: Router) {}
 
   onSignUp(): void {
     if (this.password !== this.confirmPassword) {
-      alert('Passwords do not match!');
+      this.message = 'Passwords do not match!';
+      this.messageClass = 'error';
       return;
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(this.email)) {
-      alert('Invalid email address!');
+      this.message = 'Invalid email address!';
+      this.messageClass = 'error';
       return;
     }
 
@@ -43,14 +46,19 @@ export class SignupComponent {
     this.http.post(signupUrl, payload, { observe: 'response' }).subscribe({
       next: (response) => {
         if (response.status === 201) {
-          alert('Signup successful!');
-          this.router.navigate(['/login']);
+          this.message = 'Signup successful! Redirecting to login...';
+          this.messageClass = 'success';
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 1500);
         } else {
-          alert('Signup failed. Please try again.');
+          this.message = 'Signup failed. Please try again.';
+          this.messageClass = 'error';
         }
       },
-      error: (error) => {
-        alert('Signup failed. Please try again.');
+      error: () => {
+        this.message = 'Signup failed. Please try again.';
+        this.messageClass = 'error';
       }
     });
   }

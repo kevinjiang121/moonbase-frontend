@@ -5,6 +5,7 @@
   <input type="password" placeholder="Confirm Password" [(ngModel)]="confirmPassword" />
   <input type="email" placeholder="Email" [(ngModel)]="email" />
   <button class="btn" (click)="onSignUp()">Sign Up</button>
+  <div *ngIf="message" [ngClass]="messageClass">{{ message }}</div>
   <p class="login-link">
     Already have an account? <a [routerLink]="['/login']">Login</a>
   </p>
