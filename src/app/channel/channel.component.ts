@@ -31,6 +31,7 @@ export class ChannelComponent implements OnInit {
   newChannelName: string = '';
   newChannelDescription: string = '';
   newChannelGroupId: number | null = null;
+  newChannelType: string = 'text';
 
   constructor(private channelService: ChannelService) {}
 
@@ -95,12 +96,16 @@ export class ChannelComponent implements OnInit {
     this.newChannelName = '';
     this.newChannelDescription = '';
     this.newChannelGroupId = null;
+    this.newChannelType = 'text';
   }
 
   createChannelForGroup(groupId: number): void {
-    this.newChannelGroupId = groupId;
     this.contextMenuVisible = true;
     this.contextMenuMode = 'createChannel';
+    this.newChannelName = '';
+    this.newChannelDescription = '';
+    this.newChannelGroupId = groupId;
+    this.newChannelType = 'text';
   }
 
   submitCreateCategory(): void {
@@ -129,14 +134,13 @@ export class ChannelComponent implements OnInit {
       return;
     }
     const data: any = {
-      name: this.newChannelName.trim()
+      name: this.newChannelName.trim(),
+      channel_type: this.newChannelType
     };
     if (this.newChannelDescription.trim()) {
       data.description = this.newChannelDescription.trim();
     }
-    if (this.newChannelGroupId !== null) {
-      data.group = this.newChannelGroupId;
-    }
+    data.group = this.newChannelGroupId !== null ? this.newChannelGroupId : null;
     this.channelService.createChannel(data).subscribe({
       next: () => {
         alert('Channel created successfully!');

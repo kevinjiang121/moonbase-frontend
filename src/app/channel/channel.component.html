@@ -14,7 +14,7 @@
         <span class="icon" [class.expanded]="expandedGroups[group.id]">&#x25B6;</span>
         {{ group.name }}
       </button>
-      <button class="add-button" (click)="createChannelForGroup(group.id)">+</button>
+      <button class="add-button" (click)="$event.stopPropagation(); createChannelForGroup(group.id)">+</button>
     </div>
     <ul *ngIf="expandedGroups[group.id]">
       <li *ngFor="let channel of (groupedChannels[group.id] || [])">
