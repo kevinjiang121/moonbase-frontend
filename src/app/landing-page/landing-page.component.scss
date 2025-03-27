@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Arizonia';
+  src: url('../../assets/fonts/Arizonia-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .landing-page {
   width: 100vw;
   height: 100vh;
@@ -7,6 +14,7 @@
 }
 
 .landing-container {
+  position: relative;
   width: 40vw;
   height: 50vh;
   display: flex;
@@ -16,15 +24,34 @@
   border-radius: 20px;
 }
 
+.moonbase-logo {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Arizonia', cursive;
+  font-size: 3rem;
+  margin: 0;
+  padding: 0 1rem;
+  background-color: #DDA0DD;
+  border-radius: 8px;
+  z-index: 2;
+}
+
 .top-container {
   flex: 1;
   display: flex;
-  border: 1px solid #444;
+  margin-top: 4rem;
+  border: none;
 }
 
 .column {
   flex: 1;
-  border: 1px solid #555;
+  border: none;
+}
+
+.column + .column {
+  border-left: 1px solid #555;
 }
 
 .bottom-container {
@@ -36,7 +63,6 @@
 .bottom-box {
   flex: 1;
   border: 1px solid #555;
-
   display: flex;
   justify-content: center;
   align-items: center;
