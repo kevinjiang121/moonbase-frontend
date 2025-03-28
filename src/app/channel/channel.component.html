@@ -28,7 +28,11 @@
     class="context-menu"
     (click)="onContextMenuClick($event)"
     *ngIf="contextMenuVisible"
-    [ngStyle]="{ 'top.px': contextMenuY, 'left.px': contextMenuX }">
+    [ngStyle]="
+      contextMenuMode === 'main'
+        ? { 'top.px': contextMenuY, 'left.px': contextMenuX }
+        : { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }
+    ">
     <ng-container [ngSwitch]="contextMenuMode">
       <ng-container *ngSwitchCase="'main'">
         <div class="menu-item" (click)="showCreateChannel()">Create Channel</div>
