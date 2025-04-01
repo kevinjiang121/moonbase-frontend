@@ -23,4 +23,15 @@
 
 .message-username {
   margin-bottom: 4px;
+  color: #fff;
+
+  .timestamp {
+    margin-left: 8px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+  }
+}
+
+.message-body {
+  color: #fff;
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, HostListener, ElementRef, ViewChild, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChannelService, Channel, ChannelGroup } from './channel.service';
@@ -12,6 +12,7 @@ import { ChannelService, Channel, ChannelGroup } from './channel.service';
 })
 export class ChannelComponent implements OnInit {
   @ViewChild('contextMenuRef') contextMenuRef!: ElementRef<HTMLDivElement>;
+  @Output() channelSelected = new EventEmitter<number>();
 
   channelGroups: ChannelGroup[] = [];
   channels: Channel[] = [];
@@ -154,5 +155,8 @@ export class ChannelComponent implements OnInit {
 
   cancelContextMenu(): void {
     this.contextMenuMode = 'main';
+  }
+  selectChannel(channel: Channel): void {
+    this.channelSelected.emit(channel.id);
   }
 }

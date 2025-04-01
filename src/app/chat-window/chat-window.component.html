@@ -1,8 +1,11 @@
 <div class="chat-window">
   <div class="messages" #messagesContainer>
     <div class="message" *ngFor="let msg of messages">
-      <div class="message-username"><strong>{{ username }}</strong></div>
-      <div class="message-body">{{ msg }}</div>
+      <div class="message-username">
+        <strong>{{ username }}</strong>
+        <span class="timestamp">{{ msg.sent_at | date:'short' }}</span>
+      </div>
+      <div class="message-body">{{ msg.content }}</div>
     </div>
   </div>
   <app-chat (messageSend)="sendMessage($event)"></app-chat>

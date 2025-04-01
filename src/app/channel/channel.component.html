@@ -3,7 +3,7 @@
     <h3>Channels</h3>
     <ul>
       <li *ngFor="let channel of ungroupedChannels">
-        <button class="channel-btn">{{ channel.name }}</button>
+        <button class="channel-btn" (click)="selectChannel(channel)">{{ channel.name }}</button>
       </li>
     </ul>
   </div>
@@ -18,7 +18,7 @@
     </div>
     <ul *ngIf="expandedGroups[group.id]">
       <li *ngFor="let channel of (groupedChannels[group.id] || [])">
-        <button class="channel-btn indented">{{ channel.name }}</button>
+        <button class="channel-btn indented" (click)="selectChannel(channel)">{{ channel.name }}</button>
       </li>
     </ul>
   </div>

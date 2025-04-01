@@ -1,9 +1,9 @@
 <div class="home-page">
   <div class="channel-container">
-    <app-channel></app-channel>
+    <app-channel (channelSelected)="onChannelSelected($event)"></app-channel>
   </div>
   <div class="chat-window-container">
-    <app-chat-window></app-chat-window>
+    <app-chat-window [messages]="messages" (messageSend)="onMessageSend($event)"></app-chat-window>
   </div>
   <button class="logoff-button" (click)="logOff()">Log Off</button>
 </div>
