@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChannelComponent } from '../channel/channel.component';
 import { ChatWindowComponent } from '../chat-window/chat-window.component';
 import { AuthService } from '../auth/auth.service';
 import { Router } from '@angular/router';
 import { ChatService, ChatMessage } from '../chat/chat.service';
+import { ChatWebSocketService } from '../chat/chat-websocket.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home-page',
@@ -13,26 +15,42 @@ import { ChatService, ChatMessage } from '../chat/chat.service';
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.scss']
 })
-export class HomePageComponent implements OnInit {
+export class HomePageComponent implements OnInit, OnDestroy {
   messages: ChatMessage[] = [];
   selectedChannelId: number = 1;
+  private wsSubscription: Subscription | undefined;
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private chatService: ChatService
+    private chatService: ChatService,
+    private chatWebSocketService: ChatWebSocketService
   ) {}
 
   ngOnInit(): void {
-    this.loadMessages();
+    this.loadInitialMessages();
+    this.connectWebSocket();
+  }
+
+  ngOnDestroy(): void {
+    if (this.wsSubscription) {
+      this.wsSubscription.unsubscribe();
+    }
+    this.chatWebSocketService.close();
   }
 
   onChannelSelected(channelId: number): void {
+    if (this.wsSubscription) {
+      this.wsSubscription.unsubscribe();
+    }
+    this.chatWebSocketService.close();
+
     this.selectedChannelId = channelId;
-    this.loadMessages();
+    this.loadInitialMessages();
+    this.connectWebSocket();
   }
 
-  loadMessages(): void {
+  loadInitialMessages(): void {
     this.chatService.getChannelMessages(this.selectedChannelId).subscribe({
       next: (data: ChatMessage[]) => {
         this.messages = data;
@@ -43,15 +61,23 @@ export class HomePageComponent implements OnInit {
     });
   }
 
+  connectWebSocket(): void {
+    this.wsSubscription = this.chatWebSocketService.connect(this.selectedChannelId).subscribe({
+      next: (message: ChatMessage) => {
+        this.messages.push(message);
+      },
+      error: (error) => {
+        console.error('WebSocket error:', error);
+      }
+    });
+  }
+
   onMessageSend(newMessage: string): void {
-    const newChatMessage: ChatMessage = {
-      id: Date.now(),
-      channel: this.selectedChannelId,
-      author: 0,
-      content: newMessage,
-      sent_at: new Date().toISOString()
+    const payload = {
+      message: newMessage,
+      user_id: 1
     };
-    this.messages.push(newChatMessage);
+    this.chatWebSocketService.sendMessage(payload);
   }
 
   logOff(): void {

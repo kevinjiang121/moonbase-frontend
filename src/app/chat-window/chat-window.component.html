@@ -5,7 +5,7 @@
         <strong>{{ username }}</strong>
         <span class="timestamp">{{ msg.sent_at | date:'short' }}</span>
       </div>
-      <div class="message-body">{{ msg.content }}</div>
+      <div class="message-body">{{ msg.message }}</div>
     </div>
   </div>
   <app-chat (messageSend)="sendMessage($event)"></app-chat>
