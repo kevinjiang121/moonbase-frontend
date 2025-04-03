@@ -29,7 +29,8 @@ export class ChatWebSocketService {
           channel: channelId,
           author: data.user_id,
           message: data.message,
-          sent_at: data.sent_at || new Date().toISOString()
+          sent_at: data.sent_at || new Date().toISOString(),
+          username: data.username
         };
         this.messagesSubject.next(incoming);
       } catch (error) {

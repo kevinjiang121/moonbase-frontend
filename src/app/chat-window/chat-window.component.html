@@ -2,7 +2,7 @@
   <div class="messages" #messagesContainer>
     <div class="message" *ngFor="let msg of messages">
       <div class="message-username">
-        <strong>{{ username }}</strong>
+        <strong>{{ msg.username }}</strong>
         <span class="timestamp">{{ msg.sent_at | date:'short' }}</span>
       </div>
       <div class="message-body">{{ msg.message }}</div>

@@ -21,7 +21,6 @@ import { ChatMessage } from '../chat/chat.service';
 })
 export class ChatWindowComponent implements AfterViewChecked {
   @Input() messages: ChatMessage[] = [];
-  @Input() username: string = 'testUser';
   @Output() messageSend = new EventEmitter<string>();
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
 

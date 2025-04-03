@@ -8,6 +8,7 @@ export interface ChatMessage {
   author: number;
   message: string;
   sent_at: string;
+  username: string;
 }
 
 @Injectable({
@@ -25,7 +26,8 @@ export class ChatService {
         channel: m.channel,
         author: m.author,
         message: m.content,
-        sent_at: m.sent_at
+        sent_at: m.sent_at,
+        username: m.username
       })))
     );
   }
