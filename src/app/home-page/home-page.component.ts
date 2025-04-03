@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChannelComponent } from '../channel/channel.component';
 import { ChatWindowComponent } from '../chat-window/chat-window.component';
@@ -24,7 +24,9 @@ export class HomePageComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private chatService: ChatService,
-    private chatWebSocketService: ChatWebSocketService
+    private chatWebSocketService: ChatWebSocketService,
+    private ngZone: NgZone,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -54,6 +56,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
     this.chatService.getChannelMessages(this.selectedChannelId).subscribe({
       next: (data: ChatMessage[]) => {
         this.messages = data;
+        this.cd.detectChanges();
       },
       error: () => {
         alert('Failed to load messages for the selected channel.');
@@ -64,7 +67,10 @@ export class HomePageComponent implements OnInit, OnDestroy {
   connectWebSocket(): void {
     this.wsSubscription = this.chatWebSocketService.connect(this.selectedChannelId).subscribe({
       next: (message: ChatMessage) => {
-        this.messages.push(message);
+        this.ngZone.run(() => {
+          this.messages.push(message);
+          this.cd.detectChanges();
+        });
       },
       error: (error) => {
         console.error('WebSocket error:', error);
