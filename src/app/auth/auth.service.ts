@@ -32,6 +32,7 @@ export class AuthService {
         this.loggedInSubject.next(true);
         if (isPlatformBrowser(this.platformId)) {
           localStorage.setItem('authToken', response.access_token);
+          localStorage.setItem('currentUser', JSON.stringify(response.user));
         }
       })
     );
@@ -40,6 +41,7 @@ export class AuthService {
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('authToken');
+      localStorage.removeItem('currentUser');
     }
     this.loggedInSubject.next(false);
   }
@@ -50,5 +52,13 @@ export class AuthService {
       return !!token;
     }
     return false;
-  }  
+  }
+
+  getCurrentUser(): { user_id: number; username: string; email: string } | null {
+    if (isPlatformBrowser(this.platformId)) {
+      const userStr = localStorage.getItem('currentUser');
+      return userStr ? JSON.parse(userStr) : null;
+    }
+    return null;
+  }
 }

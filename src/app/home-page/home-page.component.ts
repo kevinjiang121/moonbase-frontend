@@ -79,9 +79,14 @@ export class HomePageComponent implements OnInit, OnDestroy {
   }
 
   onMessageSend(newMessage: string): void {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      console.error("No logged in user found!");
+      return;
+    }
     const payload = {
       message: newMessage,
-      user_id: 1
+      user_id: currentUser.user_id
     };
     this.chatWebSocketService.sendMessage(payload);
   }
