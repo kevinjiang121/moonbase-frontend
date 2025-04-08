@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChannelService, Channel, ChannelGroup } from './channel.service';
 
+type ContextMenuMode = 'main' | 'createCategory' | 'createChannel' | 'deleteChannel' | 'deleteGroup';
+
 @Component({
   selector: 'app-channel',
   standalone: true,
@@ -18,21 +20,22 @@ export class ChannelComponent implements OnInit {
   channels: Channel[] = [];
   ungroupedChannels: Channel[] = [];
   groupedChannels: { [groupId: number]: Channel[] } = {};
-
   expandedGroups: { [groupId: number]: boolean } = {};
 
-  contextMenuVisible: boolean = false;
-  contextMenuX: number = 0;
-  contextMenuY: number = 0;
-  contextMenuMode: 'main' | 'createCategory' | 'createChannel' = 'main';
+  contextMenuVisible = false;
+  contextMenuX = 0;
+  contextMenuY = 0;
+  contextMenuMode: ContextMenuMode = 'main';
 
-  newCategoryName: string = '';
-  newCategoryDescription: string = '';
-
-  newChannelName: string = '';
-  newChannelDescription: string = '';
+  newCategoryName = '';
+  newCategoryDescription = '';
+  newChannelName = '';
+  newChannelDescription = '';
   newChannelGroupId: number | null = null;
-  newChannelType: string = 'text';
+  newChannelType = 'text';
+
+  selectedChannelToDelete: Channel | null = null;
+  selectedGroupToDelete: ChannelGroup | null = null;
 
   constructor(private channelService: ChannelService) {}
 
@@ -42,13 +45,13 @@ export class ChannelComponent implements OnInit {
   }
 
   loadChannelGroups(): void {
-    this.channelService.getChannelGroups().subscribe((groups: ChannelGroup[]) => {
+    this.channelService.getChannelGroups().subscribe(groups => {
       this.channelGroups = groups;
     });
   }
 
   loadChannels(): void {
-    this.channelService.getChannels().subscribe((channels: Channel[]) => {
+    this.channelService.getChannels().subscribe(channels => {
       this.channels = channels;
       this.ungroupedChannels = channels.filter(ch => ch.group === null);
       this.groupedChannels = {};
@@ -67,45 +70,66 @@ export class ChannelComponent implements OnInit {
     this.expandedGroups[groupId] = !this.expandedGroups[groupId];
   }
 
-  onRightClick(event: MouseEvent): void {
-    event.preventDefault();
-    this.contextMenuVisible = true;
-    this.contextMenuX = event.clientX;
-    this.contextMenuY = event.clientY;
-    this.contextMenuMode = 'main';
-  }
-
-  onContextMenuClick(event: MouseEvent): void {
-    event.stopPropagation();
-  }
-
-  @HostListener('document:click', ['$event.target'])
-  onDocumentClick(target: HTMLElement): void {
-    if (this.contextMenuRef && !this.contextMenuRef.nativeElement.contains(target)) {
-      this.contextMenuVisible = false;
+  onContainerContextMenu(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (target.closest('.channel-btn') || 
+        target.closest('.group-btn') || 
+        target.closest('.add-button')) {
+      return;
     }
+    event.preventDefault();
+    this.clearSelections();
+    this.setMenuPosition(event);
+    this.contextMenuMode = 'main';
+    this.contextMenuVisible = true;
+  }
+
+  onChannelRightClick(event: MouseEvent, channel: Channel): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.clearSelections();
+    this.selectedChannelToDelete = channel;
+    this.setMenuPosition(event);
+    this.contextMenuMode = 'deleteChannel';
+    this.contextMenuVisible = true;
+  }
+
+  onGroupRightClick(event: MouseEvent, group: ChannelGroup): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.clearSelections();
+    this.selectedGroupToDelete = group;
+    this.setMenuPosition(event);
+    this.contextMenuMode = 'deleteGroup';
+    this.contextMenuVisible = true;
+  }
+
+  createChannelForGroup(event: MouseEvent, groupId: number): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.clearSelections();
+    this.setMenuPosition(event);
+    this.contextMenuMode = 'createChannel';
+    this.newChannelName = '';
+    this.newChannelDescription = '';
+    this.newChannelGroupId = groupId;
+    this.newChannelType = 'text';
+    this.contextMenuVisible = true;
   }
 
   showCreateCategory(): void {
+    this.clearSelections();
     this.contextMenuMode = 'createCategory';
     this.newCategoryName = '';
     this.newCategoryDescription = '';
   }
 
   showCreateChannel(): void {
+    this.clearSelections();
     this.contextMenuMode = 'createChannel';
     this.newChannelName = '';
     this.newChannelDescription = '';
     this.newChannelGroupId = null;
-    this.newChannelType = 'text';
-  }
-
-  createChannelForGroup(groupId: number): void {
-    this.contextMenuVisible = true;
-    this.contextMenuMode = 'createChannel';
-    this.newChannelName = '';
-    this.newChannelDescription = '';
-    this.newChannelGroupId = groupId;
     this.newChannelType = 'text';
   }
 
@@ -136,12 +160,10 @@ export class ChannelComponent implements OnInit {
     }
     const data: any = {
       name: this.newChannelName.trim(),
-      channel_type: this.newChannelType
+      channel_type: this.newChannelType,
+      description: this.newChannelDescription.trim() || undefined,
+      group: this.newChannelGroupId !== null ? this.newChannelGroupId : null
     };
-    if (this.newChannelDescription.trim()) {
-      data.description = this.newChannelDescription.trim();
-    }
-    data.group = this.newChannelGroupId !== null ? this.newChannelGroupId : null;
     this.channelService.createChannel(data).subscribe({
       next: () => {
         alert('Channel created successfully!');
@@ -153,10 +175,67 @@ export class ChannelComponent implements OnInit {
     });
   }
 
+  confirmDeleteChannel(): void {
+    if (this.selectedChannelToDelete) {
+      this.channelService.deleteChannel(this.selectedChannelToDelete.id).subscribe({
+        next: () => {
+          alert('Channel deleted successfully!');
+          this.loadChannels();
+          this.clearSelections();
+          this.contextMenuVisible = false;
+          this.contextMenuMode = 'main';
+        },
+        error: () => alert('Failed to delete channel.')
+      });
+    }
+  }
+
+  confirmDeleteGroup(): void {
+    if (this.selectedGroupToDelete) {
+      this.channelService.deleteChannelGroup(this.selectedGroupToDelete.id).subscribe({
+        next: () => {
+          alert('Channel group deleted successfully!');
+          this.loadChannelGroups();
+          this.loadChannels();
+          this.clearSelections();
+          this.contextMenuVisible = false;
+          this.contextMenuMode = 'main';
+        },
+        error: () => alert('Failed to delete channel group.')
+      });
+    }
+  }
+
   cancelContextMenu(): void {
+    this.contextMenuVisible = false;
+    this.clearSelections();
     this.contextMenuMode = 'main';
   }
+
   selectChannel(channel: Channel): void {
     this.channelSelected.emit(channel.id);
+  }
+
+  clearSelections(): void {
+    this.selectedChannelToDelete = null;
+    this.selectedGroupToDelete = null;
+  }
+
+  setMenuPosition(event: MouseEvent): void {
+    this.contextMenuX = event.clientX;
+    this.contextMenuY = event.clientY;
+  }
+
+  onContextMenuClick(event: MouseEvent): void {
+    event.stopPropagation();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    if (this.contextMenuRef && !this.contextMenuRef.nativeElement.contains(event.target as Node)) {
+      this.contextMenuVisible = false;
+      this.clearSelections();
+      this.contextMenuMode = 'main';
+    }
   }
 }

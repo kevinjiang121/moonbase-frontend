@@ -1,43 +1,48 @@
-<div class="channel-display" (contextmenu)="onRightClick($event)">
+<div class="channel-display" (contextmenu)="onContainerContextMenu($event)">
   <div class="ungrouped-section">
     <h3>Channels</h3>
     <ul>
       <li *ngFor="let channel of ungroupedChannels">
-        <button class="channel-btn" (click)="selectChannel(channel)">{{ channel.name }}</button>
+        <button class="channel-btn"
+                (click)="selectChannel(channel)"
+                (contextmenu)="onChannelRightClick($event, channel)">
+          {{ channel.name }}
+        </button>
       </li>
     </ul>
   </div>
 
   <div class="group-section" *ngFor="let group of channelGroups">
-    <div class="group-row">
+    <div class="group-row" (contextmenu)="onGroupRightClick($event, group)">
       <button class="group-btn" (click)="toggleGroup(group.id)">
         <span class="icon" [class.expanded]="expandedGroups[group.id]">&#x25B6;</span>
         {{ group.name }}
       </button>
-      <button class="add-button" (click)="$event.stopPropagation(); createChannelForGroup(group.id)">+</button>
+      <button class="add-button" (click)="createChannelForGroup($event, group.id)">
+        +
+      </button>
     </div>
     <ul *ngIf="expandedGroups[group.id]">
       <li *ngFor="let channel of (groupedChannels[group.id] || [])">
-        <button class="channel-btn indented" (click)="selectChannel(channel)">{{ channel.name }}</button>
+        <button class="channel-btn indented"
+                (click)="selectChannel(channel)"
+                (contextmenu)="onChannelRightClick($event, channel)">
+          {{ channel.name }}
+        </button>
       </li>
     </ul>
   </div>
 
-  <div
-    #contextMenuRef
-    class="context-menu"
-    (click)="onContextMenuClick($event)"
-    *ngIf="contextMenuVisible"
-    [ngStyle]="
-      contextMenuMode === 'main'
-        ? { 'top.px': contextMenuY, 'left.px': contextMenuX }
-        : { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }
-    ">
+  <div #contextMenuRef class="context-menu"
+       (click)="onContextMenuClick($event)"
+       *ngIf="contextMenuVisible"
+       [ngStyle]="{'top.px': contextMenuY, 'left.px': contextMenuX}">
     <ng-container [ngSwitch]="contextMenuMode">
       <ng-container *ngSwitchCase="'main'">
         <div class="menu-item" (click)="showCreateChannel()">Create Channel</div>
         <div class="menu-item" (click)="showCreateCategory()">Create Category</div>
       </ng-container>
+
       <ng-container *ngSwitchCase="'createCategory'">
         <div class="menu-form">
           <label>
@@ -54,6 +59,7 @@
           </div>
         </div>
       </ng-container>
+
       <ng-container *ngSwitchCase="'createChannel'">
         <div class="menu-form">
           <label>
@@ -78,6 +84,14 @@
             <button (click)="cancelContextMenu()">Cancel</button>
           </div>
         </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'deleteChannel'">
+        <div class="menu-item" (click)="confirmDeleteChannel()">Delete Channel</div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'deleteGroup'">
+        <div class="menu-item" (click)="confirmDeleteGroup()">Delete Group</div>
       </ng-container>
     </ng-container>
   </div>
