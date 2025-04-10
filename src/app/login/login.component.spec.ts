@@ -54,16 +54,16 @@ describe('LoginComponent', () => {
     });
   }));
 
-  it('should alert on login failure', waitForAsync(() => {
-    spyOn(window, 'alert');
+  it('should show error message on login failure', waitForAsync(() => {
     (authService.login as jasmine.Spy).and.returnValue(throwError(() => new Error('Login failed')));
-
+    
     component.username = 'test';
     component.password = 'wrong';
     component.onLogin();
 
     fixture.whenStable().then(() => {
-      expect(window.alert).toHaveBeenCalledWith('Login failed. Please try again.');
+      expect(component.message).toEqual('Login failed. Please try again.');
+      expect(component.messageClass).toEqual('error');
     });
   }));
 });

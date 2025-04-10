@@ -10,19 +10,24 @@ describe('SignupComponent', () => {
   let component: SignupComponent;
   let fixture: ComponentFixture<SignupComponent>;
   let httpMock: HttpTestingController;
-  let router: Router;
+  let routerSpy: jasmine.SpyObj<Router>;
 
   beforeEach(waitForAsync(() => {
+    const routerTestingSpy = jasmine.createSpyObj('Router', ['navigate']);
     TestBed.configureTestingModule({
-      imports: [SignupComponent, HttpClientTestingModule, RouterTestingModule, FormsModule]
+      imports: [SignupComponent, HttpClientTestingModule, RouterTestingModule, FormsModule],
+      providers: [
+        { provide: Router, useValue: routerTestingSpy }
+      ]
     }).compileComponents();
+
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    httpMock = TestBed.inject(HttpTestingController);
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SignupComponent);
     component = fixture.componentInstance;
-    httpMock = TestBed.inject(HttpTestingController);
-    router = TestBed.inject(Router);
     fixture.detectChanges();
   });
 
@@ -34,68 +39,63 @@ describe('SignupComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should alert if passwords do not match', waitForAsync(() => {
-    spyOn(window, 'alert');
+  it('should alert if passwords do not match', () => {
     component.username = 'test';
     component.password = 'password1';
     component.confirmPassword = 'password2';
     component.email = 'test@example.com';
-
     component.onSignUp();
-    fixture.whenStable().then(() => {
-      expect(window.alert).toHaveBeenCalledWith('Passwords do not match!');
-    });
-  }));
+    expect(component.message).toEqual('Passwords do not match!');
+    expect(component.messageClass).toEqual('error');
+  });
 
-  it('should alert if email is invalid', waitForAsync(() => {
-    spyOn(window, 'alert');
+  it('should alert if email is invalid', () => {
     component.username = 'test';
     component.password = 'password';
     component.confirmPassword = 'password';
     component.email = 'invalidemail';
-
+    
     component.onSignUp();
-    fixture.whenStable().then(() => {
-      expect(window.alert).toHaveBeenCalledWith('Invalid email address!');
-    });
-  }));
+
+    expect(component.message).toEqual('Invalid email address!');
+    expect(component.messageClass).toEqual('error');
+  });
 
   it('should send POST request and navigate on successful signup', waitForAsync(() => {
-    spyOn(window, 'alert');
-    spyOn(router, 'navigate');
-    
     component.username = 'test';
     component.password = 'password';
     component.confirmPassword = 'password';
     component.email = 'test@example.com';
-
+    
     component.onSignUp();
-
-    const req = httpMock.expectOne(`${environment.apiUrl}/api/auth/signup/`);
+    const req = httpMock.expectOne(`${environment.apiUrl}/auth/signup/`);
     expect(req.request.method).toBe('POST');
     req.flush({}, { status: 201, statusText: 'Created' });
-
+    
     fixture.whenStable().then(() => {
-      expect(window.alert).toHaveBeenCalledWith('Signup successful!');
-      expect(router.navigate).toHaveBeenCalledWith(['/login']);
+      expect(component.message).toEqual('Signup successful! Redirecting to login...');
+      expect(component.messageClass).toEqual('success');
+      setTimeout(() => {
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
+      }, 1500);
     });
   }));
 
   it('should alert on signup failure', waitForAsync(() => {
-    spyOn(window, 'alert');
-    
     component.username = 'test';
     component.password = 'password';
     component.confirmPassword = 'password';
     component.email = 'test@example.com';
-
+    
     component.onSignUp();
+    const req = httpMock.expectOne(`${environment.apiUrl}/auth/signup/`);
+    expect(req.request.method).toBe('POST');
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/api/auth/signup/`);
     req.flush({}, { status: 400, statusText: 'Bad Request' });
-
+    
     fixture.whenStable().then(() => {
-      expect(window.alert).toHaveBeenCalledWith('Signup failed. Please try again.');
+      expect(component.message).toEqual('Signup failed. Please try again.');
+      expect(component.messageClass).toEqual('error');
     });
   }));
 });

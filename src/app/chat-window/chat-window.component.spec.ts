@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 import { By } from '@angular/platform-browser';
 import { ChatWindowComponent } from './chat-window.component';
 import { ChatMessage } from '../chat/chat.service';
+import { ChatComponent } from '../chat/chat.component';
 
 @Component({
   selector: 'app-chat',
@@ -10,7 +11,6 @@ import { ChatMessage } from '../chat/chat.service';
 })
 class ChatComponentStub {
   messageSend = new EventEmitter<string>();
-
   simulateSend(): void {
     this.messageSend.emit('stubbed message');
   }
@@ -22,8 +22,14 @@ describe('ChatWindowComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ChatWindowComponent, ChatComponentStub]
-    }).compileComponents();
+      imports: [ChatWindowComponent]
+    })
+    .overrideComponent(ChatComponent, {
+      set: {
+        template: `<div (click)="simulateSend()"></div>`,
+      }
+    })
+    .compileComponents();
   });
 
   beforeEach(() => {
@@ -57,16 +63,24 @@ describe('ChatWindowComponent', () => {
   it('should scroll to the bottom of the messages container after view check', () => {
     const containerEl = fixture.debugElement.query(By.css('.messages')).nativeElement as HTMLElement;
     Object.defineProperty(containerEl, 'scrollHeight', { value: 500, configurable: true });
-    containerEl.scrollTop = 0;
+    let scrollTopValue = 0;
+    Object.defineProperty(containerEl, 'scrollTop', {
+      get: () => scrollTopValue,
+      set: (val: number) => { scrollTopValue = val; },
+      configurable: true
+    });
+    scrollTopValue = 0;
     component.ngAfterViewChecked();
-    expect(containerEl.scrollTop).toEqual(500);
+    fixture.detectChanges();
+    expect(scrollTopValue).toEqual(500);
   });
 
   it('should re-emit messageSend event when child ChatComponent stub emits a message', () => {
     spyOn(component.messageSend, 'emit');
-    const chatDebugEl = fixture.debugElement.query(By.directive(ChatComponentStub));
-    const chatStubInstance = chatDebugEl.componentInstance as ChatComponentStub;
-    chatStubInstance.messageSend.emit('Hello from stub');
+    const chatDebugEl = fixture.debugElement.query(By.directive(ChatComponent));
+    expect(chatDebugEl).toBeTruthy('ChatComponent instance not found');
+    const chatInstance = chatDebugEl.componentInstance as ChatComponentStub;
+    chatInstance.messageSend.emit('Hello from stub');
     fixture.detectChanges();
     expect(component.messageSend.emit).toHaveBeenCalledWith('Hello from stub');
   });
