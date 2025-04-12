@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { LoginComponent } from './login.component';
 import { AuthService } from '../auth/auth.service';
 import { Router } from '@angular/router';
@@ -36,22 +36,21 @@ describe('LoginComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should call authService.login on onLogin and navigate on success', waitForAsync(() => {
+  it('should call authService.login on onLogin and navigate on success', fakeAsync(() => {
     const dummyResponse = {
       access_token: 'dummy-token',
       user: { user_id: 1, username: 'test', email: 'test@test.com' }
     };
     (authService.login as jasmine.Spy).and.returnValue(of(dummyResponse));
-    spyOn(router, 'navigateByUrl');
-
+    spyOn(router, 'navigate');
     component.username = 'test';
     component.password = 'password';
     component.onLogin();
+    tick(1500);
+    fixture.detectChanges();
 
-    fixture.whenStable().then(() => {
-      expect(authService.login).toHaveBeenCalledWith('test', 'password');
-      expect(router.navigateByUrl).toHaveBeenCalledWith('/home-page');
-    });
+    expect(authService.login).toHaveBeenCalledWith('test', 'password');
+    expect(router.navigate).toHaveBeenCalledWith(['/home-page']);
   }));
 
   it('should show error message on login failure', waitForAsync(() => {
