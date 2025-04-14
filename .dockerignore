@@ -1,0 +1,26 @@
+# Ignore node_modules directories (local ones, as dependencies are installed in the container)
+node_modules
+
+# Ignore built artifacts; the build stage creates a fresh build inside Docker
+dist
+
+# Ignore git metadata and configuration files
+.git
+.gitignore
+
+# Ignore Docker files (if you prefer not to send them into the build context)
+Dockerfile*
+.dockerignore
+
+# Ignore log files and other temporary files
+npm-debug.log*
+yarn-error.log*
+*.log
+
+# Ignore IDE and editor configuration folders
+.vscode
+.idea
+
+# Optionally, ignore other documentation and miscellaneous files
+README.md
+*.md
