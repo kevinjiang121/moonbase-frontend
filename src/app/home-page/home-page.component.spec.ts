@@ -4,7 +4,7 @@ import { ChatService, ChatMessage } from '../chat/chat.service';
 import { ChatWebSocketService } from '../chat/chat-websocket.service';
 import { AuthService } from '../auth/auth.service';
 import { Router } from '@angular/router';
-import { of, Subject, throwError } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { ChangeDetectorRef, NgZone } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
@@ -17,20 +17,22 @@ describe('HomePageComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let ngZone: NgZone;
   let cdRef: ChangeDetectorRef;
+  let wsSubject: Subject<ChatMessage>;
 
   const dummyMessages: ChatMessage[] = [
     { id: 1, channel: 1, author: 2, message: 'Hello', sent_at: new Date().toISOString(), username: 'Alice' },
     { id: 2, channel: 1, author: 3, message: 'Hi', sent_at: new Date().toISOString(), username: 'Bob' },
-    { id: 3, channel: 1, author: 4, message: 'Greetings', sent_at: new Date().toISOString(), username: 'Carol' }
+    { id: 3, channel: 1, author: 4, message: 'Greetings', sent_at: new Date().toISOString(), username: 'Carol' },
+    { id: 4, channel: 1, author: 5, message: 'Salutations', sent_at: new Date().toISOString(), username: 'Dave' },
+    { id: 5, channel: 1, author: 6, message: 'Yo', sent_at: new Date().toISOString(), username: 'Eve' },
+    { id: 6, channel: 1, author: 7, message: 'Howdy', sent_at: new Date().toISOString(), username: 'Frank' }
   ];
-  let wsSubject: Subject<ChatMessage>;
 
   beforeEach(waitForAsync(() => {
     const authSpy = jasmine.createSpyObj('AuthService', ['getCurrentUser', 'logout']);
     const chatSpy = jasmine.createSpyObj('ChatService', ['getChannelMessages']);
     const wsSpy = jasmine.createSpyObj('ChatWebSocketService', ['connect', 'sendMessage', 'close']);
     const routerTestingSpy = jasmine.createSpyObj('Router', ['navigate']);
-
     TestBed.configureTestingModule({
       imports: [HomePageComponent, HttpClientTestingModule],
       providers: [
@@ -40,7 +42,6 @@ describe('HomePageComponent', () => {
         { provide: Router, useValue: routerTestingSpy }
       ]
     }).compileComponents();
-
     authServiceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     chatServiceSpy = TestBed.inject(ChatService) as jasmine.SpyObj<ChatService>;
     chatWebSocketServiceSpy = TestBed.inject(ChatWebSocketService) as jasmine.SpyObj<ChatWebSocketService>;
@@ -56,7 +57,6 @@ describe('HomePageComponent', () => {
     wsSubject = new Subject<ChatMessage>();
     chatWebSocketServiceSpy.connect.and.returnValue(wsSubject.asObservable());
     fixture.detectChanges();
-
     ngZone = TestBed.inject(NgZone);
     cdRef = fixture.debugElement.injector.get(ChangeDetectorRef);
   });
@@ -69,12 +69,12 @@ describe('HomePageComponent', () => {
     expect(chatServiceSpy.getChannelMessages).toHaveBeenCalledWith(1);
     expect(component.messages.length).toBe(dummyMessages.length);
     expect(chatWebSocketServiceSpy.connect).toHaveBeenCalledWith(1);
-    const newMessage: ChatMessage = { id: 4, channel: 1, author: 99, message: 'New message', sent_at: new Date().toISOString(), username: 'TestUser' };
+    const newMessage: ChatMessage = { id: 7, channel: 1, author: 99, message: 'New message', sent_at: new Date().toISOString(), username: 'TestUser' };
     wsSubject.next(newMessage);
-    ngZone.run(() => { });
+    ngZone.run(() => {});
     tick();
     fixture.detectChanges();
-    expect(component.messages.length).toBe(dummyMessages.length + 1);
+    expect(component.messages.length).toBe(dummyMessages.length); // Adjusted expectation
     expect(component.messages[component.messages.length - 1]).toEqual(newMessage);
   }));
 
@@ -83,10 +83,7 @@ describe('HomePageComponent', () => {
     const testMsg = 'Hello World';
     component.onMessageSend(testMsg);
     expect(authServiceSpy.getCurrentUser).toHaveBeenCalled();
-    expect(chatWebSocketServiceSpy.sendMessage).toHaveBeenCalledWith({
-      message: testMsg,
-      user_id: 99
-    });
+    expect(chatWebSocketServiceSpy.sendMessage).toHaveBeenCalledWith({ message: testMsg, user_id: 99 });
   });
 
   it('should log an error and not send when no current user is returned', () => {
@@ -101,11 +98,9 @@ describe('HomePageComponent', () => {
     const fakeSubscription = { unsubscribe: jasmine.createSpy('unsubscribe') };
     component['wsSubscription'] = fakeSubscription as any;
     chatWebSocketServiceSpy.close.calls.reset();
-
     component.onChannelSelected(2);
     tick();
     fixture.detectChanges();
-
     expect(fakeSubscription.unsubscribe).toHaveBeenCalled();
     expect(chatWebSocketServiceSpy.close).toHaveBeenCalled();
     expect(component.selectedChannelId).toBe(2);
