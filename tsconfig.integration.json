@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig.spec.json",
+    "compilerOptions": {
+    },
+    "include": [
+      "src/integration/**/*.integration.spec.ts"
+    ],
+    "exclude": [
+      "src/app/**/*.spec.ts"
+    ]
+  }
+  
