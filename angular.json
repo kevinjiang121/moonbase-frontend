@@ -101,6 +101,19 @@
             ],
             "scripts": []
           }
+        },
+        "integration": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "karmaConfig": "karma.integration.conf.js",
+            "tsConfig": "tsconfig.integration.json",
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "assets": [
+              { "glob": "**/*", "input": "public", "output": "/" }
+            ],
+            "styles": ["src/styles.scss"],
+            "scripts": []
+          }
         }
       }
     }
