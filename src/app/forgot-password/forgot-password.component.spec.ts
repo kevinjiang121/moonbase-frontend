@@ -1,24 +1,33 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ForgotPasswordComponent } from './forgot-password.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
-describe('ForgotPasswordComponent', () => {
-  let component: ForgotPasswordComponent;
-  let fixture: ComponentFixture<ForgotPasswordComponent>;
+@Component({
+  selector: 'app-forgot-password',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './forgot-password.component.html',
+  styleUrls: ['./forgot-password.component.scss']
+})
+export class ForgotPasswordComponent {
+  email: string = '';
+  message: string = '';
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ForgotPasswordComponent, HttpClientTestingModule]
-    }).compileComponents();
-  });
+  constructor(private http: HttpClient) {}
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ForgotPasswordComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create the ForgotPasswordComponent', () => {
-    expect(component).toBeTruthy();
-  });
-});
+  forgotPassword(): void {
+    const url = `${environment.apiUrl}/auth/forgot-password/`;
+    this.http
+      .post<{ detail: string }>(url, { email: this.email })
+      .subscribe({
+        next: () => {
+          this.message = 'A password reset link has been sent to your email.';
+        },
+        error: () => {
+          this.message = 'Failed to send reset email. Please try again.';
+        }
+      });
+  }
+}
