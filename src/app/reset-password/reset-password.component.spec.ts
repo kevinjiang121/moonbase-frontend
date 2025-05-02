@@ -77,8 +77,6 @@ describe('ResetPasswordComponent', () => {
 
     expect(component.messageClass).toBe('success');
     expect(component.message).toContain('Password reset successful');
-
-    // simulate the setTimeout redirect
     tick(1500);
     expect(router.navigate).toHaveBeenCalledWith(['/login']);
   }));
