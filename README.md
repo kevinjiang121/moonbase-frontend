@@ -70,7 +70,7 @@ cd moonbase-frontend
 npm install
 ```
 
-## Environment Configuration
+### Environment Configuration
 Edit src/environments/environment.ts:
 ```bash
 export const environment = {
@@ -81,7 +81,7 @@ export const environment = {
 
 For production, update `environment.prod.ts` accordingly.
 
-## Development Server (CSR)
+### Development Server (CSR)
 
 ```
 npm run start
@@ -89,3 +89,22 @@ npm run start
 
 - Opens at http://localhost:4200/ 
 - Live‑reload on edits
+
+### Development Server (SSR)
+
+```
+npm run serve:ssr:moonbase-frontend
+```
+
+- Renders on the server
+- Listens on port 4000 by default
+- Visit http://localhost:4000/
+
+### Building for Production
+
+```
+npm run build
+```
+
+- Outputs client bundle under dist/moonbase-frontend/browser
+- Outputs server bundle under dist/moonbase-frontend/server
