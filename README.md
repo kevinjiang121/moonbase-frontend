@@ -1,59 +1,91 @@
-# MoonbaseFrontend
+# Moonbase Frontend 🚀
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.8.
+A modern Angular 19 application with Server‑Side Rendering (SSR), standalone components, context‑menu driven channel/chat UI, Cypress integration tests, and Docker support.
 
-## Development server
+## Table of Contents
 
-To start a local development server, run:
+1. [Project Overview](#project-overview)  
+2. [Features](#features)  
+3. [Prerequisites](#prerequisites)  
+4. [Getting Started](#getting-started)  
+   - [Clone & Install](#clone--install)  
+   - [Environment Configuration](#environment-configuration)  
+   - [Development Server (CSR)](#development-server-csr)  
+   - [Development Server (SSR)](#development-server-ssr)  
+5. [Building for Production](#building-for-production)  
+6. [Testing](#testing)  
+   - [Unit Tests (Karma & Jasmine)](#unit-tests-karma--jasmine)  
+   - [Integration Tests (Karma + Headless Chrome)](#integration-tests-karma--headless-chrome)  
+   - [End‑to‑End Tests (Cypress)](#end‑to‑end-tests-cypress)  
+7. [Docker](#docker)  
+8. [Project Structure](#project-structure)  
+9. [Contributing](#contributing)  
+10. [License](#license)  
+
+---
+
+## Project Overview
+
+Moonbase Frontend is the Angular client for “Moonbase”, a Real-Time Communication and Community Platform providing:
+
+- **Authentication** flows (signup, login, forgot/reset password)  
+- **Channel** & **Category** management via context‑menu  
+- Real‑time **chat** powered by WebSockets  
+- **Server‑Side Rendering** (SSR) for SEO & initial‑load performance  
+- Fully **standalone** Angular components (no NgModules)  
+- Comprehensive **unit**, **integration**, and **e2e** tests  
+- **Docker** multi‑stage build for production  
+
+---
+
+## Features
+
+- **Standalone Components** & Angular CLI 19  
+- **SSR** via `@angular/ssr` + Express  
+- **Context Menu** for channel/category CRUD  
+- **Reactive Forms** & Guards for auth flows  
+- **WebSocket** service for live chat  
+- **Unit Tests**: Karma + Jasmine  
+- **Integration Tests**: Karma (headless)  
+- **E2E Tests**: Cypress  
+- **Docker** ready (port 4000)  
+
+---
+
+## Prerequisites
+
+- Node.js v18+ & npm  
+- Docker (optional, for containerized builds)  
+- A running backend API at `environment.apiUrl` (default: `http://localhost:8000/api`)  
+
+---
+
+## Getting Started
+
+### Clone & Install
 
 ```bash
-ng serve
+git clone https://github.com/kevinjiang121/moonbase-frontend.git
+cd moonbase-frontend
+npm install
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+## Environment Configuration
+Edit src/environments/environment.ts:
 ```bash
-ng generate component component-name
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:8000/api'
+};
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+For production, update `environment.prod.ts` accordingly.
 
-```bash
-ng generate --help
+## Development Server (CSR)
+
+```
+npm run start
 ```
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- Opens at http://localhost:4200/ 
+- Live‑reload on edits
