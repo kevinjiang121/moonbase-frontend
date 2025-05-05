@@ -100,7 +100,7 @@ npm run serve:ssr:moonbase-frontend
 - Listens on port 4000 by default
 - Visit http://localhost:4000/
 
-### Building for Production
+## Building for Production
 
 ```
 npm run build
@@ -108,3 +108,77 @@ npm run build
 
 - Outputs client bundle under dist/moonbase-frontend/browser
 - Outputs server bundle under dist/moonbase-frontend/server
+
+## Testing
+
+### Unit Tests (Karma & Jasmine)
+
+```
+npm run test
+```
+
+- Runs all `*.spec.ts` under `src/app`
+- Watch mode by default
+
+### Integration Tests (Karma + Headless Chrome)
+
+```
+npm run test:integration
+```
+
+- Runs only `*.integration.spec.ts` under `src/integration`
+- Uses headless Chrome via Karma
+
+### End‑to‑End Tests (Cypress)
+
+```
+npm run e2e
+```
+
+- Opens Cypress Test Runner
+- To run headlessly:
+
+```
+npx cypress run
+```
+
+## Docker
+
+Build and run with Docker:
+
+```
+docker build -t moonbase-frontend .
+docker run --rm -p 4000:4000 moonbase-frontend
+```
+
+- Multi‑stage build for optimized image
+- Exposes port 4000
+
+```
+├── src/
+│   ├── app/
+│   ├── environments/
+│   ├── integration/
+│   ├── main.ts
+│   ├── main.server.ts
+│   ├── server.ts
+│   └── styles.scss
+├── public/
+├── cypress/
+├── karma.conf.js
+├── karma.integration.conf.js
+├── tsconfig.*.json
+└── Dockerfile
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/fooBar`)
+3. Commit your changes (`git commit -am 'Add some fooBar'`)
+4. Push to the branch (`git push origin feature/fooBar`)
+5. Open a Pull Request
+
+## License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
