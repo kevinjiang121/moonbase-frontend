@@ -1,4 +1,4 @@
-# Moonbase Frontend 🚀
+# Moonbase Frontend
 
 A modern Angular 19 application with Server‑Side Rendering (SSR), standalone components, context‑menu driven channel/chat UI, Cypress integration tests, and Docker support.
 
