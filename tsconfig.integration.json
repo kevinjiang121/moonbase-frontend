@@ -5,11 +5,7 @@
     "types": ["jasmine"]
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts"
-  ],
-  "exclude": [
-    "cypress",
-    "**/*.cy.ts"
+    "src/integration/integration-test.ts",
+    "src/integration/**/*.integration.spec.ts"
   ]
 }
