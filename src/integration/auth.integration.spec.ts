@@ -1,5 +1,3 @@
-// src/integration/auth.integration.spec.ts
-
 import { TestBed, ComponentFixture, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
