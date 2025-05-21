@@ -45,25 +45,27 @@ export class ChannelComponent implements OnInit {
   }
 
   loadChannelGroups(): void {
-    this.channelService.getChannelGroups().subscribe(groups => {
-      this.channelGroups = groups;
-    });
+    this.channelService.getChannelGroups()
+      .subscribe((groups: ChannelGroup[]) => {
+        this.channelGroups = groups;
+      });
   }
 
   loadChannels(): void {
-    this.channelService.getChannels().subscribe(channels => {
-      this.channels = channels;
-      this.ungroupedChannels = channels.filter(ch => ch.group === null);
-      this.groupedChannels = {};
-      channels.forEach(channel => {
-        if (channel.group !== null) {
-          if (!this.groupedChannels[channel.group]) {
-            this.groupedChannels[channel.group] = [];
+    this.channelService.getChannels()
+      .subscribe((channels: Channel[]) => {
+        this.channels = channels;
+        this.ungroupedChannels = channels.filter((ch: Channel) => ch.group === null);
+        this.groupedChannels = {};
+        channels.forEach((channel: Channel) => {
+          if (channel.group !== null) {
+            if (!this.groupedChannels[channel.group]) {
+              this.groupedChannels[channel.group] = [];
+            }
+            this.groupedChannels[channel.group].push(channel);
           }
-          this.groupedChannels[channel.group].push(channel);
-        }
+        });
       });
-    });
   }
 
   toggleGroup(groupId: number): void {
@@ -72,9 +74,11 @@ export class ChannelComponent implements OnInit {
 
   onContainerContextMenu(event: MouseEvent): void {
     const target = event.target as HTMLElement;
-    if (target.closest('.channel-btn') || 
-        target.closest('.group-btn') || 
-        target.closest('.add-button')) {
+    if (
+      target.closest('.channel-btn') ||
+      target.closest('.group-btn') ||
+      target.closest('.add-button')
+    ) {
       return;
     }
     event.preventDefault();
@@ -153,27 +157,38 @@ export class ChannelComponent implements OnInit {
     });
   }
 
-  submitCreateChannel(): void {
-    if (!this.newChannelName.trim()) {
-      alert('Please enter a channel name.');
-      return;
-    }
-    const data: any = {
-      name: this.newChannelName.trim(),
-      channel_type: this.newChannelType,
-      description: this.newChannelDescription.trim() || undefined,
-      group: this.newChannelGroupId !== null ? this.newChannelGroupId : null
-    };
-    this.channelService.createChannel(data).subscribe({
-      next: () => {
-        alert('Channel created successfully!');
-        this.loadChannelGroups();
-        this.loadChannels();
-        this.contextMenuVisible = false;
-      },
-      error: () => alert('Failed to create channel.')
-    });
+ submitCreateChannel(): void {
+  if (!this.newChannelName.trim()) {
+    alert('Please enter a channel name.');
+    return;
   }
+
+  const data: {
+    name: string;
+    channel_type: string;
+    description: string;
+    group?: number;
+  } = {
+    name: this.newChannelName.trim(),
+    channel_type: this.newChannelType,
+    description: this.newChannelDescription.trim()
+  };
+
+  if (this.newChannelGroupId != null) {
+    data.group = this.newChannelGroupId;
+  }
+
+  this.channelService.createChannel(data).subscribe({
+    next: () => {
+      alert('Channel created successfully!');
+      this.loadChannelGroups();
+      this.loadChannels();
+      this.contextMenuVisible = false;
+    },
+    error: () => alert('Failed to create channel.')
+  });
+}
+
 
   confirmDeleteChannel(): void {
     if (this.selectedChannelToDelete) {
@@ -232,7 +247,10 @@ export class ChannelComponent implements OnInit {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
-    if (this.contextMenuRef && !this.contextMenuRef.nativeElement.contains(event.target as Node)) {
+    if (
+      this.contextMenuRef &&
+      !this.contextMenuRef.nativeElement.contains(event.target as Node)
+    ) {
       this.contextMenuVisible = false;
       this.clearSelections();
       this.contextMenuMode = 'main';
