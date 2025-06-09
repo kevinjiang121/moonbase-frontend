@@ -1,10 +1,25 @@
-describe('Login Page', () => {
-  it('should display email and password inputs and a login button', () => {
+describe('Login Page Interactions', () => {
+  beforeEach(() => {
     cy.visit('/login');
-    cy.get('input[type="email"]').should('exist');
-    cy.get('input[type="password"]').should('exist');
-    cy.get('button[type="submit"]')
-      .contains(/^login$/i)
-      .should('exist');
+  });
+
+  it('allows typing into username and password fields', () => {
+    cy.get('.login-box input[placeholder="Username"]')
+      .type('testuser')
+      .should('have.value', 'testuser');
+
+    cy.get('.login-box input[placeholder="Password"]')
+      .type('P@ssw0rd123')
+      .should('have.value', 'P@ssw0rd123');
+  });
+
+  it('has working navigation links for forgot-password and sign-up', () => {
+    cy.get('.login-box .forgot-password a')
+      .should('have.attr', 'href')
+      .and('include', '/forgot-password');
+
+    cy.get('.login-box .signup-link a')
+      .should('have.attr', 'href')
+      .and('include', '/signup');
   });
 });
