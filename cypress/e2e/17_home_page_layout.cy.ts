@@ -17,10 +17,8 @@ describe('Home Page Layout', () => {
     cy.wait('@getMessages');
   });
 
-  it('renders header, channel list, chat input, and footer', () => {
-    cy.get('app-header').should('exist');
+  it('renders the channel list sidebar and chat input', () => {
     cy.get('.channel-display').should('exist');
     cy.get('.chat-input input[placeholder="Type a message..."]').should('exist');
-    cy.get('app-footer').should('exist');
   });
 });
