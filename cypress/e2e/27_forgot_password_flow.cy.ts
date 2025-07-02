@@ -2,7 +2,7 @@ describe('Forgot Password Flow', () => {
   beforeEach(() => {
     cy.intercept('POST', '**/auth/forgot-password/**', {
       statusCode: 200,
-      body: { message: 'Email sent' }
+      body: {}
     }).as('forgotRequest');
     cy.visit('/forgot-password');
   });
@@ -12,6 +12,8 @@ describe('Forgot Password Flow', () => {
       .type('user@example.com');
     cy.get('button').click();
     cy.wait('@forgotRequest');
-    cy.contains(/email sent/i).should('be.visible');
+    cy.contains(
+      'A password reset link has been sent to your email.'
+    ).should('be.visible');
   });
 });
