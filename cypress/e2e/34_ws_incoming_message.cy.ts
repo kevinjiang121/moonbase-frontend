@@ -4,30 +4,29 @@ describe('WebSocket Incoming Message', () => {
     cy.intercept('GET', '**/channels/get-channels-list/**', {
       body: [{ id: 10, name: 'TestChannel', description: '', channel_type: 'text', created_at: '', group: null }]
     }).as('getChannels');
-    cy.intercept('GET', '**/api/chats/chats/?channel=10*', { body: [] }).as('getMessages');
+    cy.intercept('GET', '**/api/chats/chats/?channel=1*', { body: [] })
+      .as('getInitialMessages');
+    cy.intercept('GET', '**/api/chats/chats/?channel=10*', { body: [] })
+      .as('getMessages');
     cy.visit('/home-page', {
       onBeforeLoad(win) {
         (win as any).lastWS = null;
-
         class FakeWebSocket {
           static OPEN = 1;
-          onopen: (() => void) | null = null;
-          onmessage: ((ev: { data: string }) => void) | null = null;
+          onopen: () => void = () => {};
+          onmessage: (ev: any) => void = () => {};
           readyState = FakeWebSocket.OPEN;
-
           constructor(url: string) {
             (win as any).lastWS = this;
-            setTimeout(() => this.onopen?.(), 0);
+            setTimeout(() => this.onopen(), 0);
           }
-
-          send(_data: string) { }
+          send() {}
           close() {}
           addEventListener(type: string, fn: any) {
             if (type === 'open') this.onopen = fn;
             if (type === 'message') this.onmessage = fn;
           }
         }
-
         win.WebSocket = FakeWebSocket as any;
         win.localStorage.setItem('authToken', 'dummy-token');
         win.localStorage.setItem(
@@ -36,9 +35,7 @@ describe('WebSocket Incoming Message', () => {
         );
       }
     });
-    cy.wait('@getGroups');
-    cy.wait('@getChannels');
-    cy.wait('@getMessages');
+    cy.wait(['@getGroups', '@getChannels', '@getInitialMessages']);
   });
 
   it('renders a message when server pushes via WebSocket', () => {
@@ -46,13 +43,13 @@ describe('WebSocket Incoming Message', () => {
     cy.wait('@getMessages');
     cy.window().then(win => {
       const ws = (win as any).lastWS;
-      const serverPayload = JSON.stringify({
+      const payload = JSON.stringify({
         user_id:   2,
         username: 'ServerUser',
         message:  'Hello from server',
         sent_at:  new Date().toISOString()
       });
-      ws.onmessage?.({ data: serverPayload });
+      ws.onmessage({ data: payload });
     });
 
     cy.get('.message-body', { timeout: 5000 })
