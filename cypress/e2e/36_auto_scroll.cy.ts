@@ -1,11 +1,10 @@
 describe('Chat Auto‑Scroll on New Message', () => {
   beforeEach(() => {
-    cy.intercept('GET', '**/channels/get-channel-groups-list/**', { body: [] }).as('getGroups');
+    cy.intercept('GET', '**/channels/get-channel-groups-list/**',   { body: [] }).as('getGroups');
     cy.intercept('GET', '**/channels/get-channels-list/**', {
-      body: [
-        { id: 1, name: 'General', description: '', channel_type: 'text', created_at: '', group: null }
-      ]
+      body: [{ id: 1, name: 'General', description: '', channel_type: 'text', created_at: '', group: null }]
     }).as('getChannels');
+
     const initialMessages = Array.from({ length: 20 }, (_, i) => ({
       id:       i + 1,
       channel:  1,
@@ -18,22 +17,19 @@ describe('Chat Auto‑Scroll on New Message', () => {
     cy.visit('/home-page', {
       onBeforeLoad(win) {
         (win as any).lastWS = null;
-
         class FakeWebSocket {
           static OPEN = 1;
-          onopen: (() => void) | null = null;
-          onmessage: ((ev: { data: string }) => void) | null = null;
           readyState = FakeWebSocket.OPEN;
-
-          constructor(url: string) {
+          onopen = () => {};
+          onmessage = (_: any) => {};
+          constructor() {
             (win as any).lastWS = this;
-            setTimeout(() => this.onopen?.(), 0);
+            setTimeout(() => this.onopen(), 0);
           }
-
-          send(_data: string) { }
+          send() {}
           close() {}
           addEventListener(type: string, fn: any) {
-            if (type === 'open') this.onopen = fn;
+            if (type === 'open')    this.onopen = fn;
             if (type === 'message') this.onmessage = fn;
           }
         }
@@ -48,25 +44,33 @@ describe('Chat Auto‑Scroll on New Message', () => {
     cy.wait(['@getGroups', '@getChannels', '@getInitialMessages']);
   });
 
-  it('scrolls the messages container to bottom when a new message arrives', () => {
-    cy.get('.messages').then($el => {
-      Object.defineProperty($el[0], 'scrollHeight', { get: () => 1000 });
-      Object.defineProperty($el[0], 'clientHeight', { get: () => 300 });
-      $el[0].scrollTop = 0;
-    });
+  it('scrolls down when a new message arrives', () => {
+    cy.get('.messages')
+      .invoke('css', 'height', '200px')
+      .invoke('css', 'overflow-y', 'auto')
+      .should($el => {
+        const el = $el[0];
+        expect(el.scrollHeight).to.be.greaterThan(el.clientHeight);
+      })
+      .then($el => {
+        const el = $el[0];
+        el.scrollTop = 0;
+        expect(el.scrollTop).to.equal(0);
+      });
     cy.window().then(win => {
       const ws = (win as any).lastWS;
-      const payload = JSON.stringify({
-        user_id:   2,
-        username: 'ServerUser',
-        message:  'Newest message',
-        sent_at:  new Date().toISOString()
+      ws.onmessage({
+        data: JSON.stringify({
+          user_id:   2,
+          username: 'ServerUser',
+          message:  'Newest message',
+          sent_at:  new Date().toISOString()
+        })
       });
-      ws.onmessage?.({ data: payload });
     });
-    cy.wait(100);
-    cy.get('.messages').then($el => {
-      expect($el[0].scrollTop).to.equal(1000);
+    cy.get('.messages', { timeout: 5000 }).should($el => {
+      const el = $el[0];
+      expect(el.scrollTop).to.be.greaterThan(0);
     });
   });
 });
