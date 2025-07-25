@@ -1,9 +1,12 @@
 describe('Message Input Clearing on Send', () => {
   beforeEach(() => {
-    cy.intercept('GET', '**/channels/get-channel-groups-list/**',   { body: [] }).as('getGroups');
+    cy.intercept('GET', '**/channels/get-channel-groups-list/**', { body: [] }).as('getGroups');
     cy.intercept('GET', '**/channels/get-channels-list/**', {
-      body: [{ id: 10, name: 'TestChannel', description: '', channel_type: 'text', created_at: '', group: null }]
+      body: [
+        { id: 10, name: 'TestChannel', description: '', channel_type: 'text', created_at: '', group: null }
+      ]
     }).as('getChannels');
+    cy.intercept('GET', '**/api/chats/chats/?channel=1*', { body: [] }).as('getMessagesCh1');
     cy.intercept('GET', '**/api/chats/chats/?channel=10*', { body: [] }).as('getMessages');
     cy.visit('/home-page', {
       onBeforeLoad(win) {
@@ -37,7 +40,7 @@ describe('Message Input Clearing on Send', () => {
       }
     });
 
-    cy.wait(['@getGroups', '@getChannels', '@getMessages']);
+    cy.wait(['@getGroups', '@getChannels', '@getMessagesCh1']);
   });
 
   it('clears the input after sending a message', () => {
@@ -46,7 +49,6 @@ describe('Message Input Clearing on Send', () => {
     const testMsg = 'ClearTest message';
     cy.get('.chat-input input[placeholder="Type a message..."]')
       .type(`${testMsg}{enter}`);
-
     cy.window()
       .its('lastSentMessage')
       .should('contain', `"message":"${testMsg}"`);
